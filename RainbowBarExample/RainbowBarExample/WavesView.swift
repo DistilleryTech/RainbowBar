@@ -38,14 +38,34 @@ class WaveNode: Identifiable {
 
 struct WavesView: View {
     @State private var waveFinished = PassthroughSubject<Void, Never>()
-    @State var stop: Bool = false
     private let colorEmitter = ColorEmitter()
-    @State var waveNodes = [WaveNode]()
+    @State private var waveNodes = [WaveNode]()
+    @State private var animatedInnerState: Bool = false {
+        didSet {
+            print("animatedInnerState didSet to \(animatedInnerState)")
+            if animatedInnerState {
+                var res = [WaveNode]()
+                for index in 0..<visibleWavesCount {
+                    let color = self.colorEmitter.getColor()
+                    let newNode = WaveNode(color: color, delay: waveEmitPeriod * Double(index))
+                    res.append(newNode)
+                }
+                self.waveNodes =  res
+            }
+        }
+    }
+    var animatedSignal = PassthroughSubject<Bool, Never>()
+
+//    func makeWave(node: WaveNode) -> WaveView {
+//        print("makeWave: nodes = \(waveNodes.count)")
+//        return WaveView(animated: self.$animatedInnerState, animationFinished: self.waveFinished, node: node)
+//    }
 
     var body: some View {
         return ZStack {
             ForEach(waveNodes) { node in
-                return WaveView(animationFinished: self.waveFinished, node: node)
+//                self.makeWave(node: node)
+                WaveView(animationFinished: self.waveFinished, node: node)
             }
         }.onReceive(waveFinished) {node in
             // remove invisible (lower, first) node?
@@ -60,34 +80,52 @@ struct WavesView: View {
             }
             
             //add new color (node)
-            if (!self.stop) {
+            if (self.animatedInnerState) {
                 let color = self.colorEmitter.getColor()
                 let newNode = WaveNode(color: color, delay: 0)
                 self.waveNodes.append(newNode)
             }
-        }.drawingGroup().onTapGesture {
-            self.stop = true
-        }.onAppear {
-            var res = [WaveNode]()
-            for index in 0..<visibleWavesCount {
-                let color = self.colorEmitter.getColor()
-                let newNode = WaveNode(color: color, delay: waveEmitPeriod * Double(index))
-                res.append(newNode)
-            }
-            self.waveNodes =  res
-        }
+        }.onReceive(animatedSignal) { animated in
+            self.animatedInnerState = animated
+        }.drawingGroup()
     }
 }
 
 struct WaveView: View {
-    @State private var animated = false
-    
     var animationFinished: PassthroughSubject<Void, Never>
     var node: WaveNode
 
+    @State private var animated: Bool = false
+    
     var body: some View {
         let animationDuration = waveEmitPeriod * Double(visibleWavesCount)
-        return NotchWave(phase: animated ? 1.0 : 0, animationFinished: self.animationFinished, node: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).foregroundColor(node.color).onAppear { self.animated.toggle() }
+        print("WaveView body: dur = \(animationDuration) color = \(node.color)")
+        return NotchWave(phase: animated ? 1.0 : 0, animationFinished: self.animationFinished, node: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).foregroundColor(node.color).onAppear {
+            self.animated.toggle()
+        }
+    }
+}
+
+struct RainbowBar: View {
+    private var animatedSignal = PassthroughSubject<Bool, Never>()
+    @State private var animatedInnerState: Bool = false
+
+    var body: some View {
+        VStack {
+            HStack {
+                WavesView(animatedSignal: animatedSignal).rotationEffect(.degrees(180), anchor: .center).rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+                Spacer().frame(width: 170)
+                WavesView(animatedSignal: animatedSignal).blur(radius: 1).clipShape(Rectangle())
+            }.frame(height: 30)
+            Spacer()
+            Button(action: {
+                self.animatedInnerState.toggle()
+                self.animatedSignal.send(self.animatedInnerState)
+            }) {
+                Text("Toggle")
+            }
+            Spacer()
+        }
     }
 }
 
@@ -99,8 +137,8 @@ struct NotchWave: Shape {
     var animatableData: CGFloat {
         get { return phase }
         set {
+            print("animatable \(newValue)")
             phase = newValue
-            node.finished = phase == 1.0
         }
     }
     
@@ -110,6 +148,7 @@ struct NotchWave: Shape {
     func path(in rect: CGRect) -> Path {
         DispatchQueue.main.async {
             if self.phase >= 1.0 {
+                self.node.finished = true
                 self.animationFinished.send()
             }
         }
@@ -140,23 +179,8 @@ struct NotchWave: Shape {
     }
 }
 
-struct RainbowBar: View {
-
-    var body: some View {
-        VStack {
-            HStack {
-                WavesView().rotationEffect(.degrees(180), anchor: .center).rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
-                Spacer().frame(width: 170)
-                WavesView().blur(radius: 1).clipShape(Rectangle())
-            }.frame(height: 30)
-            Spacer()
-        }
-    }
-}
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         RainbowBar()
     }
 }
-
