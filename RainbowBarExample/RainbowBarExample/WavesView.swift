@@ -12,6 +12,7 @@ import Combine
 let waveEmitPeriod: Double = 0.66
 let visibleWavesCount: Int = 3
 let waveColors: [Color] = [.red, .green, .blue]
+let backgroundColor: Color = .yellow
 
 class ColorEmitter {
     private var colors: [Color] = waveColors
@@ -23,16 +24,38 @@ class ColorEmitter {
     }
 }
 
-class WaveNode: Identifiable {
+class WaveNode: Identifiable, Equatable {
     let id = UUID()
-    
-    let color: Color
     let delay: Double
+
+    var started: Bool = false
     var finished: Bool = false
+    
+    init(delay: Double) {
+        self.delay = delay
+    }
+    
+    static func ==(lhs: WaveNode, rhs: WaveNode) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+class NotchWaveNode: WaveNode {
+    let color: Color
     
     init(color: Color, delay: Double) {
         self.color = color
-        self.delay = delay
+        super.init(delay: delay)
+    }
+}
+
+class GradientWaveNode: WaveNode {
+    let frontColor, backColor: Color
+    
+    init(frontColor: Color, backColor: Color, delay: Double) {
+        self.frontColor = frontColor
+        self.backColor = backColor
+        super.init(delay: delay)
     }
 }
 
@@ -42,30 +65,39 @@ struct WavesView: View {
     @State private var waveNodes = [WaveNode]()
     @State private var animatedInnerState: Bool = false {
         didSet {
-            print("animatedInnerState didSet to \(animatedInnerState)")
             if animatedInnerState {
-                var res = [WaveNode]()
+                var res = [NotchWaveNode]()
                 for index in 0..<visibleWavesCount {
                     let color = self.colorEmitter.getColor()
-                    let newNode = WaveNode(color: color, delay: waveEmitPeriod * Double(index))
+                    let newNode = NotchWaveNode(color: color, delay: waveEmitPeriod * Double(index))
                     res.append(newNode)
                 }
                 self.waveNodes =  res
+            } else {
+                let nodesToRemove = waveNodes.filter {
+                    !$0.started
+                }
+                let lastRemovedNode: WaveNode? = nodesToRemove.last
+                waveNodes.removeAll {
+                    nodesToRemove.contains($0)
+                }
+                if let lastVisibleNode = waveNodes.last as? NotchWaveNode {
+                    let gradientNode = GradientWaveNode(frontColor: lastVisibleNode.color, backColor: backgroundColor, delay: lastRemovedNode?.delay ?? 0)
+                    waveNodes.append(gradientNode)
+                }
             }
         }
     }
     var animatedSignal = PassthroughSubject<Bool, Never>()
-
-//    func makeWave(node: WaveNode) -> WaveView {
-//        print("makeWave: nodes = \(waveNodes.count)")
-//        return WaveView(animated: self.$animatedInnerState, animationFinished: self.waveFinished, node: node)
-//    }
+    
+    func makeWaveView(from node: WaveNode) -> some View {
+        WaveView(animationFinished: self.waveFinished, node: node)
+    }
 
     var body: some View {
         return ZStack {
             ForEach(waveNodes) { node in
-//                self.makeWave(node: node)
-                WaveView(animationFinished: self.waveFinished, node: node)
+                self.makeWaveView(from: node)
             }
         }.onReceive(waveFinished) {node in
             // remove invisible (lower, first) node?
@@ -82,7 +114,7 @@ struct WavesView: View {
             //add new color (node)
             if (self.animatedInnerState) {
                 let color = self.colorEmitter.getColor()
-                let newNode = WaveNode(color: color, delay: 0)
+                let newNode = NotchWaveNode(color: color, delay: 0)
                 self.waveNodes.append(newNode)
             }
         }.onReceive(animatedSignal) { animated in
@@ -97,10 +129,20 @@ struct WaveView: View {
 
     @State private var animated: Bool = false
     
+    func makeWave(from node: WaveNode) -> some View {
+        let phase: CGFloat = self.animated ? 1.0 : 0.0
+        if let notchNode = node as? NotchWaveNode {
+            return AnyView(NotchWave(phase: phase, animationFinished: self.animationFinished, node: notchNode).foregroundColor(notchNode.color))
+        } else if let gradientNode = node as? GradientWaveNode {
+            return AnyView(GradientWave(phase: phase, frontColor: gradientNode.frontColor, backColor: gradientNode.backColor, animationFinished: self.animationFinished))
+        } else {
+            return AnyView(EmptyView())
+        }
+    }
+    
     var body: some View {
         let animationDuration = waveEmitPeriod * Double(visibleWavesCount)
-        print("WaveView body: dur = \(animationDuration) color = \(node.color)")
-        return NotchWave(phase: animated ? 1.0 : 0, animationFinished: self.animationFinished, node: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).foregroundColor(node.color).onAppear {
+        return makeWave(from: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).onAppear {
             self.animated.toggle()
         }
     }
@@ -129,24 +171,25 @@ struct RainbowBar: View {
     }
 }
 
+private let topNotchCornerRadius: CGFloat = 5
+private let bottomNotchCornerRadius: CGFloat = 17
+private let minWidth = topNotchCornerRadius + bottomNotchCornerRadius
+
 struct NotchWave: Shape {
     var phase: CGFloat
     var animationFinished: PassthroughSubject<Void, Never>
-    var node: WaveNode
+    var node: NotchWaveNode
 
     var animatableData: CGFloat {
         get { return phase }
-        set {
-            print("animatable \(newValue)")
-            phase = newValue
-        }
+        set { phase = newValue }
     }
     
-    private let topNotchCornerRadius: CGFloat = 5
-    private let bottomNotchCornerRadius: CGFloat = 17
-
     func path(in rect: CGRect) -> Path {
         DispatchQueue.main.async {
+            if !self.node.started && self.phase > 0.0 {
+                self.node.started = true
+            }
             if self.phase >= 1.0 {
                 self.node.finished = true
                 self.animationFinished.send()
@@ -156,9 +199,7 @@ struct NotchWave: Shape {
         var p = Path()
         
         p.move(to: CGPoint.zero)
-        
-        let minWidth = topNotchCornerRadius + bottomNotchCornerRadius
-        
+                
         let currentWidth = minWidth + rect.size.width * phase
         p.addLine(to: CGPoint(x: currentWidth, y: 0))
         
@@ -178,6 +219,34 @@ struct NotchWave: Shape {
         return p
     }
 }
+
+struct GradientWave: View {
+    var phase: CGFloat
+    var frontColor, backColor: Color
+    var animationFinished: PassthroughSubject<Void, Never>
+
+    var animatableData: CGFloat {
+        get { return phase }
+        set { phase = newValue }
+    }
+    
+    var body: some View {
+        DispatchQueue.main.async {
+            if self.phase >= 1.0 {
+                self.animationFinished.send()
+            }
+        }
+        
+        return GeometryReader { geometry in
+            HStack(spacing: 0) {
+                Rectangle().foregroundColor(self.backColor).frame(width: (geometry.size.width + minWidth) * self.phase)
+                LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]), startPoint: .leading, endPoint: .trailing).frame(width: minWidth)
+                Spacer()
+            }
+        }
+    }
+}
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
