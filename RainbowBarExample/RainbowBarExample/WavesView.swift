@@ -74,15 +74,11 @@ struct WavesView: View {
                 }
                 self.waveNodes =  res
             } else {
-                let nodesToRemove = waveNodes.filter {
+                waveNodes.removeAll {
                     !$0.started
                 }
-                let lastRemovedNode: WaveNode? = nodesToRemove.last
-                waveNodes.removeAll {
-                    nodesToRemove.contains($0)
-                }
                 if let lastVisibleNode = waveNodes.last as? NotchWaveNode {
-                    let gradientNode = GradientWaveNode(frontColor: lastVisibleNode.color, backColor: backgroundColor, delay: lastRemovedNode?.delay ?? 0)
+                    let gradientNode = GradientWaveNode(frontColor: lastVisibleNode.color, backColor: backgroundColor, delay: 0)
                     waveNodes.append(gradientNode)
                 }
             }
@@ -200,7 +196,7 @@ struct NotchWave: Shape {
         
         p.move(to: CGPoint.zero)
                 
-        let currentWidth = minWidth + rect.size.width * phase
+        let currentWidth = 2 * minWidth + rect.size.width * phase
         p.addLine(to: CGPoint(x: currentWidth, y: 0))
         
         let topArcCenter = CGPoint(x: currentWidth, y: topNotchCornerRadius)
