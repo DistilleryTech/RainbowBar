@@ -12,7 +12,7 @@ import Combine
 let waveEmitPeriod: Double = 0.66
 let visibleWavesCount: Int = 3
 let waveColors: [Color] = [.red, .green, .blue]
-let backgroundColor: Color = .yellow
+let backgroundColor: Color = .white
 
 class ColorEmitter {
     private var colors: [Color] = waveColors
@@ -60,7 +60,7 @@ class GradientWaveNode: WaveNode {
 }
 
 struct WavesView: View {
-    @State private var waveFinished = PassthroughSubject<Void, Never>()
+    private let waveFinished = PassthroughSubject<Void, Never>()
     private let colorEmitter = ColorEmitter()
     @State private var waveNodes = [WaveNode]()
     @State private var animatedInnerState: Bool = false {
@@ -84,16 +84,12 @@ struct WavesView: View {
             }
         }
     }
-    var animatedSignal = PassthroughSubject<Bool, Never>()
+    @State var animatedSignal = PassthroughSubject<Bool, Never>()
     
-    func makeWaveView(from node: WaveNode) -> some View {
-        WaveView(animationFinished: self.waveFinished, node: node)
-    }
-
     var body: some View {
         return ZStack {
             ForEach(waveNodes) { node in
-                self.makeWaveView(from: node)
+                WaveView(animationFinished: self.waveFinished, node: node)
             }
         }.onReceive(waveFinished) {node in
             // remove invisible (lower, first) node?
@@ -145,16 +141,24 @@ struct WaveView: View {
 }
 
 struct RainbowBar: View {
+    @State var animated = PassthroughSubject<Bool, Never>()
+    
+    var body: some View {
+        return HStack {
+            WavesView(animatedSignal: animated).rotationEffect(.degrees(180), anchor: .center).rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+            Spacer().frame(width: 128)
+            WavesView(animatedSignal: animated).blur(radius: 1).clipShape(Rectangle())
+        }
+    }
+}
+
+struct ExampleView: View {
     private var animatedSignal = PassthroughSubject<Bool, Never>()
     @State private var animatedInnerState: Bool = false
 
     var body: some View {
-        VStack {
-            HStack {
-                WavesView(animatedSignal: animatedSignal).rotationEffect(.degrees(180), anchor: .center).rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
-                Spacer().frame(width: 170)
-                WavesView(animatedSignal: animatedSignal).blur(radius: 1).clipShape(Rectangle())
-            }.frame(height: 30)
+        return VStack {
+            RainbowBar(animated: animatedSignal).frame(height: 33/*30*/)
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()
@@ -163,12 +167,13 @@ struct RainbowBar: View {
                 Text("Toggle")
             }
             Spacer()
-        }
+        }.edgesIgnoringSafeArea(.all)
     }
 }
 
-private let topNotchCornerRadius: CGFloat = 5
-private let bottomNotchCornerRadius: CGFloat = 17
+
+private let topNotchCornerRadius: CGFloat = 7/*6*/
+private let bottomNotchCornerRadius: CGFloat = 21 /*20*/
 private let minWidth = topNotchCornerRadius + bottomNotchCornerRadius
 
 struct NotchWave: Shape {
@@ -246,6 +251,6 @@ struct GradientWave: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        RainbowBar()
+        ExampleView()
     }
 }
