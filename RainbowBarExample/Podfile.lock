@@ -1,0 +1,16 @@
+PODS:
+  - Device (3.2.1)
+
+DEPENDENCIES:
+  - Device (~> 3.2.1)
+
+SPEC REPOS:
+  trunk:
+    - Device
+
+SPEC CHECKSUMS:
+  Device: 0738862dd8a30856b4bd9e21cb9b728873d21392
+
+PODFILE CHECKSUM: 34d7e8eaffa068e779de78ba8f4a5adfa007854d
+
+COCOAPODS: 1.8.4

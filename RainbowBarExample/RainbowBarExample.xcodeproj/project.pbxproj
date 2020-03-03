@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		90050784E805AB213A6C5C9F /* Pods_RainbowBarExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE29068BE8D4A018A9D9F5A0 /* Pods_RainbowBarExample.framework */; };
 		A3FFE0B923EDBF2B00D3C7C2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0B823EDBF2B00D3C7C2 /* AppDelegate.swift */; };
 		A3FFE0BB23EDBF2B00D3C7C2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0BA23EDBF2B00D3C7C2 /* SceneDelegate.swift */; };
 		A3FFE0BD23EDBF2B00D3C7C2 /* WavesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0BC23EDBF2B00D3C7C2 /* WavesView.swift */; };
@@ -24,6 +25,9 @@
 		A3FFE0C123EDBF2F00D3C7C2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A3FFE0C423EDBF2F00D3C7C2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A3FFE0C623EDBF2F00D3C7C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C97B445DE819127A4353D9F2 /* Pods-RainbowBarExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RainbowBarExample.debug.xcconfig"; path = "Target Support Files/Pods-RainbowBarExample/Pods-RainbowBarExample.debug.xcconfig"; sourceTree = "<group>"; };
+		CB88A00206F871D3DB0BECA3 /* Pods-RainbowBarExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RainbowBarExample.release.xcconfig"; path = "Target Support Files/Pods-RainbowBarExample/Pods-RainbowBarExample.release.xcconfig"; sourceTree = "<group>"; };
+		FE29068BE8D4A018A9D9F5A0 /* Pods_RainbowBarExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RainbowBarExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,17 +35,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90050784E805AB213A6C5C9F /* Pods_RainbowBarExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5CCF3C582602A76CE9A5F367 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C97B445DE819127A4353D9F2 /* Pods-RainbowBarExample.debug.xcconfig */,
+				CB88A00206F871D3DB0BECA3 /* Pods-RainbowBarExample.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		A3FFE0AC23EDBF2B00D3C7C2 = {
 			isa = PBXGroup;
 			children = (
 				A3FFE0B723EDBF2B00D3C7C2 /* RainbowBarExample */,
 				A3FFE0B623EDBF2B00D3C7C2 /* Products */,
+				5CCF3C582602A76CE9A5F367 /* Pods */,
+				A9465F884BD0D867FAE1CC92 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -75,6 +92,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		A9465F884BD0D867FAE1CC92 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FE29068BE8D4A018A9D9F5A0 /* Pods_RainbowBarExample.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -82,9 +107,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A3FFE0C923EDBF2F00D3C7C2 /* Build configuration list for PBXNativeTarget "RainbowBarExample" */;
 			buildPhases = (
+				6A3701EB41ED0075C2559AC6 /* [CP] Check Pods Manifest.lock */,
 				A3FFE0B123EDBF2B00D3C7C2 /* Sources */,
 				A3FFE0B223EDBF2B00D3C7C2 /* Frameworks */,
 				A3FFE0B323EDBF2B00D3C7C2 /* Resources */,
+				526B34E56F2A426264C383F4 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -140,6 +167,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		526B34E56F2A426264C383F4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RainbowBarExample/Pods-RainbowBarExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RainbowBarExample/Pods-RainbowBarExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RainbowBarExample/Pods-RainbowBarExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6A3701EB41ED0075C2559AC6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RainbowBarExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A3FFE0B123EDBF2B00D3C7C2 /* Sources */ = {
@@ -282,6 +351,7 @@
 		};
 		A3FFE0CA23EDBF2F00D3C7C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C97B445DE819127A4353D9F2 /* Pods-RainbowBarExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -302,6 +372,7 @@
 		};
 		A3FFE0CB23EDBF2F00D3C7C2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CB88A00206F871D3DB0BECA3 /* Pods-RainbowBarExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

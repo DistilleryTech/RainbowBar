@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import Device
 
 let waveEmitPeriod: Double = 0.66
 let visibleWavesCount: Int = 3
@@ -146,7 +147,7 @@ struct RainbowBar: View {
     var body: some View {
         return HStack {
             WavesView(animatedSignal: animated).rotationEffect(.degrees(180), anchor: .center).rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
-            Spacer().frame(width: 128)
+            Spacer().frame(width: DeviceDependentOptions.notchWidth)
             WavesView(animatedSignal: animated).blur(radius: 1).clipShape(Rectangle())
         }
     }
@@ -158,7 +159,7 @@ struct ExampleView: View {
 
     var body: some View {
         return VStack {
-            RainbowBar(animated: animatedSignal).frame(height: 33/*30*/)
+            RainbowBar(animated: animatedSignal).frame(height: DeviceDependentOptions.notchHeight)
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()
@@ -172,9 +173,75 @@ struct ExampleView: View {
 }
 
 
-private let topNotchCornerRadius: CGFloat = 7/*6*/
-private let bottomNotchCornerRadius: CGFloat = 21 /*20*/
-private let minWidth = topNotchCornerRadius + bottomNotchCornerRadius
+enum NotchSize {
+    case none
+    case small
+    case big
+}
+
+class DeviceDependentOptions {
+    static private let nonNotchedStatusBarHeight: CGFloat = 20.0
+    static private let nonNotchedStatusBarHalfHeight: CGFloat = nonNotchedStatusBarHeight / 2
+    
+    static var notchSize: NotchSize {
+        switch Device.size() {
+        case .screen5_8Inch, .screen6_5Inch:
+            return .small
+        case .screen6_1Inch:
+            return .big
+        default:
+            return .none
+        }
+    }
+    
+    static var topNotchCornerRadius: CGFloat {
+        switch notchSize {
+        case .none:
+            return nonNotchedStatusBarHalfHeight
+        case .small:
+            return 6.0
+        case .big:
+            return 7.0
+        }
+    }
+    
+    static var bottomNotchCornerRadius: CGFloat {
+        switch notchSize {
+        case .none:
+            return nonNotchedStatusBarHalfHeight
+        case .small:
+            return 20.0
+        case .big:
+            return 21.0
+        }
+    }
+    
+    static var minWidth: CGFloat {
+        return topNotchCornerRadius + bottomNotchCornerRadius
+    }
+    
+    static var notchHeight: CGFloat {
+        switch notchSize {
+        case .none:
+            return nonNotchedStatusBarHeight
+        case .small:
+            return 30
+        case .big:
+            return 33
+        }
+    }
+    
+    static var notchWidth: CGFloat {
+        switch notchSize {
+        case .none:
+            return 0
+        case .small:
+            return 117
+        case .big:
+            return 128
+        }
+    }
+}
 
 struct NotchWave: Shape {
     var phase: CGFloat
@@ -201,17 +268,17 @@ struct NotchWave: Shape {
         
         p.move(to: CGPoint.zero)
                 
-        let currentWidth = 2 * minWidth + rect.size.width * phase
+        let currentWidth = 2 * DeviceDependentOptions.minWidth + rect.size.width * phase
         p.addLine(to: CGPoint(x: currentWidth, y: 0))
         
-        let topArcCenter = CGPoint(x: currentWidth, y: topNotchCornerRadius)
-        p.addArc(center: topArcCenter, radius: topNotchCornerRadius, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+        let topArcCenter = CGPoint(x: currentWidth, y: DeviceDependentOptions.topNotchCornerRadius)
+        p.addArc(center: topArcCenter, radius: DeviceDependentOptions.topNotchCornerRadius, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
 
         let height = rect.size.height
-        p.addLine(to: CGPoint(x: currentWidth - topNotchCornerRadius, y: height - bottomNotchCornerRadius))
+        p.addLine(to: CGPoint(x: currentWidth - DeviceDependentOptions.topNotchCornerRadius, y: height - DeviceDependentOptions.bottomNotchCornerRadius))
 
-        let bottomArcCenter = CGPoint(x: currentWidth - topNotchCornerRadius - bottomNotchCornerRadius, y: height - bottomNotchCornerRadius)
-        p.addArc(center: bottomArcCenter, radius: bottomNotchCornerRadius, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+        let bottomArcCenter = CGPoint(x: currentWidth - DeviceDependentOptions.topNotchCornerRadius - DeviceDependentOptions.bottomNotchCornerRadius, y: height - DeviceDependentOptions.bottomNotchCornerRadius)
+        p.addArc(center: bottomArcCenter, radius: DeviceDependentOptions.bottomNotchCornerRadius, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
         
         p.addLine(to: CGPoint(x: 0, y: height))
 
@@ -240,8 +307,8 @@ struct GradientWave: View {
         
         return GeometryReader { geometry in
             HStack(spacing: 0) {
-                Rectangle().foregroundColor(self.backColor).frame(width: (geometry.size.width + minWidth) * self.phase)
-                LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]), startPoint: .leading, endPoint: .trailing).frame(width: minWidth)
+                Rectangle().foregroundColor(self.backColor).frame(width: (geometry.size.width + DeviceDependentOptions.minWidth) * self.phase)
+                LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]), startPoint: .leading, endPoint: .trailing).frame(width: DeviceDependentOptions.minWidth)
                 Spacer()
             }
         }
