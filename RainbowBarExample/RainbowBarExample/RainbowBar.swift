@@ -10,18 +10,34 @@ import SwiftUI
 import Combine
 import Device
 
-let waveEmitPeriod: Double = 0.66
-let visibleWavesCount: Int = 3
-let waveColors: [Color] = [.red, .green, .blue]
-let backgroundColor: Color = .white
-
-class ColorEmitter {
-    private var colors: [Color] = waveColors
+struct RainbowBar: View {
+    var waveEmitPeriod: Double = 0.66
+    var visibleWavesCount: Int = 3
+    var waveColors: [Color] = [.red, .green, .blue]
+    var backgroundColor: Color = .white
     
-    func getColor() -> Color {
-        let res = colors.removeFirst()
-        colors.append(res)
-        return res
+    @State var animated = PassthroughSubject<Bool, Never>()
+    
+    var body: some View {
+        return HStack {
+            WavesView(waveEmitPeriod: waveEmitPeriod,
+                      visibleWavesCount: visibleWavesCount,
+                      waveColors: waveColors,
+                      backgroundColor: backgroundColor,
+                      animatedSignal: animated)
+                .blur(radius: 1)
+                .clipShape(Rectangle())
+                .rotationEffect(.degrees(180), anchor: .center)
+                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+            Spacer().frame(width: DeviceDependentOptions.notchWidth)
+            WavesView(waveEmitPeriod: waveEmitPeriod,
+                      visibleWavesCount: visibleWavesCount,
+                      waveColors: waveColors,
+                      backgroundColor: backgroundColor,
+                      animatedSignal: animated)
+                .blur(radius: 1)
+                .clipShape(Rectangle())
+        }
     }
 }
 
@@ -60,16 +76,38 @@ class GradientWaveNode: WaveNode {
     }
 }
 
+class ColorEmitter {
+    var colors, refColors: [Color]?
+    
+    func nextColor(from newColors: [Color]) -> Color? {
+        if !(refColors?.elementsEqual(newColors) ?? false) {
+            colors = newColors
+            refColors = newColors
+        }
+        
+        let res = colors?.removeFirst()
+        if let res = res {
+            colors?.append(res)
+        }
+        return res
+    }
+}
+
 struct WavesView: View {
-    private let waveFinished = PassthroughSubject<Void, Never>()
+    let waveEmitPeriod: Double
+    let visibleWavesCount: Int
+    let waveColors: [Color]
+    let backgroundColor: Color
+    
     private let colorEmitter = ColorEmitter()
+    private let waveFinished = PassthroughSubject<Void, Never>()
     @State private var waveNodes = [WaveNode]()
     @State private var animatedInnerState: Bool = false {
         didSet {
             if animatedInnerState {
                 var res = [NotchWaveNode]()
                 for index in 0..<visibleWavesCount {
-                    let color = self.colorEmitter.getColor()
+                    guard let color = self.colorEmitter.nextColor(from: self.waveColors) else { continue }
                     let newNode = NotchWaveNode(color: color, delay: waveEmitPeriod * Double(index))
                     res.append(newNode)
                 }
@@ -90,7 +128,9 @@ struct WavesView: View {
     var body: some View {
         return ZStack {
             ForEach(waveNodes) { node in
-                WaveView(animationFinished: self.waveFinished, node: node)
+                WaveView(animationDuration: self.waveEmitPeriod * Double(self.visibleWavesCount),
+                         animationFinished: self.waveFinished,
+                         node: node)
             }
         }.onReceive(waveFinished) {node in
             // remove invisible (lower, first) node?
@@ -105,8 +145,7 @@ struct WavesView: View {
             }
             
             //add new color (node)
-            if (self.animatedInnerState) {
-                let color = self.colorEmitter.getColor()
+            if self.animatedInnerState, let color = self.colorEmitter.nextColor(from: self.waveColors) {
                 let newNode = NotchWaveNode(color: color, delay: 0)
                 self.waveNodes.append(newNode)
             }
@@ -117,6 +156,7 @@ struct WavesView: View {
 }
 
 struct WaveView: View {
+    var animationDuration: Double
     var animationFinished: PassthroughSubject<Void, Never>
     var node: WaveNode
 
@@ -134,44 +174,11 @@ struct WaveView: View {
     }
     
     var body: some View {
-        let animationDuration = waveEmitPeriod * Double(visibleWavesCount)
         return makeWave(from: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).onAppear {
             self.animated.toggle()
         }
     }
 }
-
-struct RainbowBar: View {
-    @State var animated = PassthroughSubject<Bool, Never>()
-    
-    var body: some View {
-        return HStack {
-            WavesView(animatedSignal: animated).rotationEffect(.degrees(180), anchor: .center).rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
-            Spacer().frame(width: DeviceDependentOptions.notchWidth)
-            WavesView(animatedSignal: animated).blur(radius: 1).clipShape(Rectangle())
-        }
-    }
-}
-
-struct ExampleView: View {
-    private var animatedSignal = PassthroughSubject<Bool, Never>()
-    @State private var animatedInnerState: Bool = false
-
-    var body: some View {
-        return VStack {
-            RainbowBar(animated: animatedSignal).frame(height: DeviceDependentOptions.notchHeight)
-            Spacer()
-            Button(action: {
-                self.animatedInnerState.toggle()
-                self.animatedSignal.send(self.animatedInnerState)
-            }) {
-                Text("Toggle")
-            }
-            Spacer()
-        }.edgesIgnoringSafeArea(.all)
-    }
-}
-
 
 enum NotchSize {
     case none

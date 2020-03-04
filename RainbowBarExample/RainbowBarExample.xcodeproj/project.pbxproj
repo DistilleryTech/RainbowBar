@@ -3,24 +3,26 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		90050784E805AB213A6C5C9F /* Pods_RainbowBarExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE29068BE8D4A018A9D9F5A0 /* Pods_RainbowBarExample.framework */; };
+		A30B4B10240FFE9300AC15EE /* ExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30B4B0F240FFE9300AC15EE /* ExampleView.swift */; };
 		A3FFE0B923EDBF2B00D3C7C2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0B823EDBF2B00D3C7C2 /* AppDelegate.swift */; };
 		A3FFE0BB23EDBF2B00D3C7C2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0BA23EDBF2B00D3C7C2 /* SceneDelegate.swift */; };
-		A3FFE0BD23EDBF2B00D3C7C2 /* WavesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0BC23EDBF2B00D3C7C2 /* WavesView.swift */; };
+		A3FFE0BD23EDBF2B00D3C7C2 /* RainbowBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3FFE0BC23EDBF2B00D3C7C2 /* RainbowBar.swift */; };
 		A3FFE0BF23EDBF2F00D3C7C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3FFE0BE23EDBF2F00D3C7C2 /* Assets.xcassets */; };
 		A3FFE0C223EDBF2F00D3C7C2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3FFE0C123EDBF2F00D3C7C2 /* Preview Assets.xcassets */; };
 		A3FFE0C523EDBF2F00D3C7C2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3FFE0C323EDBF2F00D3C7C2 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A30B4B0F240FFE9300AC15EE /* ExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleView.swift; sourceTree = "<group>"; };
 		A3FFE0B523EDBF2B00D3C7C2 /* RainbowBarExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RainbowBarExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3FFE0B823EDBF2B00D3C7C2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A3FFE0BA23EDBF2B00D3C7C2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		A3FFE0BC23EDBF2B00D3C7C2 /* WavesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WavesView.swift; sourceTree = "<group>"; };
+		A3FFE0BC23EDBF2B00D3C7C2 /* RainbowBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowBar.swift; sourceTree = "<group>"; };
 		A3FFE0BE23EDBF2F00D3C7C2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A3FFE0C123EDBF2F00D3C7C2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A3FFE0C423EDBF2F00D3C7C2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -48,7 +50,6 @@
 				C97B445DE819127A4353D9F2 /* Pods-RainbowBarExample.debug.xcconfig */,
 				CB88A00206F871D3DB0BECA3 /* Pods-RainbowBarExample.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -75,7 +76,8 @@
 			children = (
 				A3FFE0B823EDBF2B00D3C7C2 /* AppDelegate.swift */,
 				A3FFE0BA23EDBF2B00D3C7C2 /* SceneDelegate.swift */,
-				A3FFE0BC23EDBF2B00D3C7C2 /* WavesView.swift */,
+				A3FFE0BC23EDBF2B00D3C7C2 /* RainbowBar.swift */,
+				A30B4B0F240FFE9300AC15EE /* ExampleView.swift */,
 				A3FFE0BE23EDBF2F00D3C7C2 /* Assets.xcassets */,
 				A3FFE0C323EDBF2F00D3C7C2 /* LaunchScreen.storyboard */,
 				A3FFE0C623EDBF2F00D3C7C2 /* Info.plist */,
@@ -217,7 +219,8 @@
 			files = (
 				A3FFE0B923EDBF2B00D3C7C2 /* AppDelegate.swift in Sources */,
 				A3FFE0BB23EDBF2B00D3C7C2 /* SceneDelegate.swift in Sources */,
-				A3FFE0BD23EDBF2B00D3C7C2 /* WavesView.swift in Sources */,
+				A3FFE0BD23EDBF2B00D3C7C2 /* RainbowBar.swift in Sources */,
+				A30B4B10240FFE9300AC15EE /* ExampleView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
