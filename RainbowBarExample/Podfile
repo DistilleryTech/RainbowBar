@@ -1,8 +1,0 @@
-platform :ios, '13.0'
-
-target 'RainbowBarExample' do
-  use_frameworks!
-
-  pod "Device", '~> 3.2.1'
-
-end

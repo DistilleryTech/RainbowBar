@@ -1,0 +1,23 @@
+PODS:
+  - Device (3.2.1)
+  - RainbowBar (0.1.0):
+    - Device (~> 3.2.1)
+
+DEPENDENCIES:
+  - RainbowBar (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Device
+
+EXTERNAL SOURCES:
+  RainbowBar:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Device: 0738862dd8a30856b4bd9e21cb9b728873d21392
+  RainbowBar: 12631589acd06dafe9564ebc6f309e0db41dbe77
+
+PODFILE CHECKSUM: cd739b9a132fb9459cfe849f33ce63f1fdacf059
+
+COCOAPODS: 1.8.4

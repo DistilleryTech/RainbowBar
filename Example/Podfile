@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'RainbowBar_Example' do
+  pod 'RainbowBar', :path => '../'
+
+  target 'RainbowBar_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

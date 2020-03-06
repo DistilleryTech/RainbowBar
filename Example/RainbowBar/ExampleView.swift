@@ -8,6 +8,19 @@
 
 import SwiftUI
 import Combine
+import RainbowBar
+import Device
+
+func notchHeight() -> CGFloat {
+    switch Device.size() {
+    case .screen5_8Inch, .screen6_5Inch:
+        return 30
+    case .screen6_1Inch:
+        return 33
+    default:
+        return 20
+    }
+}
 
 struct ExampleView: View {
     private var animatedSignal = PassthroughSubject<Bool, Never>()
@@ -15,7 +28,7 @@ struct ExampleView: View {
 
     var body: some View {
         return VStack {
-            RainbowBar(waveEmitPeriod: 0.3, animated: animatedSignal).frame(height: DeviceDependentOptions.notchHeight)
+            RainbowBar(waveEmitPeriod: 0.3, animated: animatedSignal).frame(height: notchHeight())
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()
