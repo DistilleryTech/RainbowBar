@@ -12,7 +12,7 @@ To integrate `RainbowBar` into your project add the following to your `Podfile`:
 platform :ios, '13.0'
 use_frameworks!
 
-pod 'Device.swift'
+pod 'RainbowBar'
 ```
 
 ## Usage
