@@ -1,10 +1,5 @@
 # RainbowBar
 
-[![Language][lang-image]][lang-url]
-[![License][license-image]][license-url]
-[![Platform][platform-image]][cocoapod-url]
-[![Pod Version][pod-version-image]][cocoapod-url]
-
 Progress bar with wild animation for notched status bar
 
 ## Install
