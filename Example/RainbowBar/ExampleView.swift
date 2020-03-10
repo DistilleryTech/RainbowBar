@@ -28,7 +28,11 @@ struct ExampleView: View {
 
     var body: some View {
         return VStack {
-            RainbowBar(waveEmitPeriod: 0.3, animated: animatedSignal).frame(height: notchHeight())
+            RainbowBar(waveEmitPeriod: 0.3,
+                       visibleWavesCount: 3,
+                       waveColors: [.red, .green, .blue],
+                       backgroundColor: .white,
+                       animated: animatedSignal).frame(height: notchHeight())
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()

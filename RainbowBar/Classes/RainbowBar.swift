@@ -42,10 +42,10 @@ public struct RainbowBar: View {
         }
     }
     
-    public init(waveEmitPeriod: Double = 0.66,
-                visibleWavesCount: Int = 3,
-                waveColors: [Color] = [.red, .green, .blue],
-                backgroundColor: Color = .white,
+    public init(waveEmitPeriod: Double,
+                visibleWavesCount: Int,
+                waveColors: [Color],
+                backgroundColor: Color,
                 animated: PassthroughSubject<Bool, Never>) {
         self.waveEmitPeriod = waveEmitPeriod
         self.visibleWavesCount = visibleWavesCount
