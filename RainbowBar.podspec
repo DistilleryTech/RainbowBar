@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.summary          = 'Progress bar for notched status bar.'
 
   s.description      = <<-DESC
-  AuProgress bar with wild animation for notched status bar. Made just for fun)
+  Progress bar with wild animation for notched status bar. Made just for fun)
                        DESC
 
   s.homepage         = 'https://github.com/DistilleryTech/RainbowBar'
