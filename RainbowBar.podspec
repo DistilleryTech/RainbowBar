@@ -25,5 +25,5 @@ Pod::Spec.new do |s|
   s.source_files = 'RainbowBar/Classes/**/*'
 
   s.frameworks = 'SwiftUI', 'Combine'
-  s.dependency "Device", '~> 3.2.1'
+  s.dependency 'DeviceKit', '~> 2.0'
 end

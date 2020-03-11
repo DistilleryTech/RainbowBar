@@ -1,22 +1,22 @@
 PODS:
-  - Device (3.2.1)
+  - DeviceKit (2.3.0)
   - RainbowBar (0.1.0):
-    - Device (~> 3.2.1)
+    - DeviceKit (~> 2.0)
 
 DEPENDENCIES:
   - RainbowBar (from `../`)
 
 SPEC REPOS:
   trunk:
-    - Device
+    - DeviceKit
 
 EXTERNAL SOURCES:
   RainbowBar:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Device: 0738862dd8a30856b4bd9e21cb9b728873d21392
-  RainbowBar: 12631589acd06dafe9564ebc6f309e0db41dbe77
+  DeviceKit: da103891aa928d89f64ea8dd8aca738c5f3d8ac0
+  RainbowBar: cc5be19dd95de0c5b2fbcbdccf9bcdeabe6bf170
 
 PODFILE CHECKSUM: 91b5dd08ab9d29d0c2c2d66c8ad5000e9fe62f94
 

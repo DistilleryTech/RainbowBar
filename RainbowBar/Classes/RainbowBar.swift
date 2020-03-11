@@ -8,7 +8,7 @@
 
 import SwiftUI
 import Combine
-import Device
+import DeviceKit
 
 public let nonNotchedStatusBarHeight: CGFloat = 20.0
 
@@ -275,20 +275,32 @@ class ColorEmitter {
 
 // MARK: - Device dependent sizes
 
-enum NotchSize {
+public enum NotchSize {
     case none
     case small
     case big
 }
 
-class DeviceDependentOptions {
+public class DeviceDependentOptions {
     static private let nonNotchedStatusBarHalfHeight: CGFloat = nonNotchedStatusBarHeight / 2
     
-    static var notchSize: NotchSize {
-        switch Device.size() {
-        case .screen5_8Inch, .screen6_5Inch:
+    public static var notchSize: NotchSize {
+        switch Device.current {
+        case .iPhoneX,
+             .simulator(.iPhoneX),
+             .iPhoneXS,
+             .simulator(.iPhoneXS),
+             .iPhoneXSMax,
+             .simulator(.iPhoneXSMax),
+             .iPhone11Pro,
+             .simulator(.iPhone11Pro),
+             .iPhone11ProMax,
+             .simulator(.iPhone11ProMax):
             return .small
-        case .screen6_1Inch:
+        case .iPhoneXR,
+             .simulator(.iPhoneXR),
+             .iPhone11,
+             .simulator(.iPhone11):
             return .big
         default:
             return .none

@@ -9,16 +9,15 @@
 import SwiftUI
 import Combine
 import RainbowBar
-import Device
 
 func notchHeight() -> CGFloat {
-    switch Device.size() {
-    case .screen5_8Inch, .screen6_5Inch:
+    switch DeviceDependentOptions.notchSize {
+    case .small:
         return 30
-    case .screen6_1Inch:
+    case .big:
         return 33
-    default:
-        return 20
+    case .none:
+        return nonNotchedStatusBarHeight
     }
 }
 
