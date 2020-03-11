@@ -2,6 +2,8 @@
 
 Progress bar with wild animation for notched status bar
 
+![gif demo](https://github.com/DistilleryTech/RainbowBar/blob/master/demo.gif)
+
 ## Install
 
 ### CocoaPods
