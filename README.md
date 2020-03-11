@@ -27,8 +27,8 @@ import RainbowBar
 var animatedSignal = PassthroughSubject<Bool, Never>()
 
 RainbowBar(waveEmitPeriod: 0.3,
-                       visibleWavesCount: 3,
-                       waveColors: [.red, .green, .blue],
-                       backgroundColor: .white,
-                       animated: animatedSignal)
+           visibleWavesCount: 3,
+           waveColors: [.red, .green, .blue],
+           backgroundColor: .white,
+           animated: animatedSignal)
 ```
