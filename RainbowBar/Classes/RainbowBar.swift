@@ -55,58 +55,6 @@ public struct RainbowBar: View {
     }
 }
 
-class WaveNode: Identifiable, Equatable {
-    let id = UUID()
-    let delay: Double
-
-    var started: Bool = false
-    var finished: Bool = false
-    
-    init(delay: Double) {
-        self.delay = delay
-    }
-    
-    static func ==(lhs: WaveNode, rhs: WaveNode) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
-class NotchWaveNode: WaveNode {
-    let color: Color
-    
-    init(color: Color, delay: Double) {
-        self.color = color
-        super.init(delay: delay)
-    }
-}
-
-class GradientWaveNode: WaveNode {
-    let frontColor, backColor: Color
-    
-    init(frontColor: Color, backColor: Color, delay: Double) {
-        self.frontColor = frontColor
-        self.backColor = backColor
-        super.init(delay: delay)
-    }
-}
-
-class ColorEmitter {
-    var colors, refColors: [Color]?
-    
-    func nextColor(from newColors: [Color]) -> Color? {
-        if !(refColors?.elementsEqual(newColors) ?? false) {
-            colors = newColors
-            refColors = newColors
-        }
-        
-        let res = colors?.removeFirst()
-        if let res = res {
-            colors?.append(res)
-        }
-        return res
-    }
-}
-
 struct WavesView: View {
     let waveEmitPeriod: Double
     let visibleWavesCount: Int
@@ -194,74 +142,7 @@ struct WaveView: View {
     }
 }
 
-enum NotchSize {
-    case none
-    case small
-    case big
-}
-
-class DeviceDependentOptions {
-    static private let nonNotchedStatusBarHalfHeight: CGFloat = nonNotchedStatusBarHeight / 2
-    
-    static var notchSize: NotchSize {
-        switch Device.size() {
-        case .screen5_8Inch, .screen6_5Inch:
-            return .small
-        case .screen6_1Inch:
-            return .big
-        default:
-            return .none
-        }
-    }
-    
-    static var topNotchCornerRadius: CGFloat {
-        switch notchSize {
-        case .none:
-            return nonNotchedStatusBarHalfHeight
-        case .small:
-            return 6.0
-        case .big:
-            return 7.0
-        }
-    }
-    
-    static var bottomNotchCornerRadius: CGFloat {
-        switch notchSize {
-        case .none:
-            return nonNotchedStatusBarHalfHeight
-        case .small:
-            return 20.0
-        case .big:
-            return 21.0
-        }
-    }
-    
-    static var minWidth: CGFloat {
-        return topNotchCornerRadius + bottomNotchCornerRadius
-    }
-    
-    static var notchHeight: CGFloat {
-        switch notchSize {
-        case .none:
-            return nonNotchedStatusBarHeight
-        case .small:
-            return 30
-        case .big:
-            return 33
-        }
-    }
-    
-    static var notchWidth: CGFloat {
-        switch notchSize {
-        case .none:
-            return 0
-        case .small:
-            return 117
-        case .big:
-            return 128
-        }
-    }
-}
+// MARK: - Waves
 
 struct NotchWave: Shape {
     var phase: CGFloat
@@ -334,3 +215,132 @@ struct GradientWave: View {
         }
     }
 }
+
+// MARK: - Model
+
+class WaveNode: Identifiable, Equatable {
+    let id = UUID()
+    let delay: Double
+
+    var started: Bool = false
+    var finished: Bool = false
+    
+    init(delay: Double) {
+        self.delay = delay
+    }
+    
+    static func ==(lhs: WaveNode, rhs: WaveNode) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+class NotchWaveNode: WaveNode {
+    let color: Color
+    
+    init(color: Color, delay: Double) {
+        self.color = color
+        super.init(delay: delay)
+    }
+}
+
+class GradientWaveNode: WaveNode {
+    let frontColor, backColor: Color
+    
+    init(frontColor: Color, backColor: Color, delay: Double) {
+        self.frontColor = frontColor
+        self.backColor = backColor
+        super.init(delay: delay)
+    }
+}
+
+
+// MARK: - Misc
+
+class ColorEmitter {
+    var colors, refColors: [Color]?
+    
+    func nextColor(from newColors: [Color]) -> Color? {
+        if !(refColors?.elementsEqual(newColors) ?? false) {
+            colors = newColors
+            refColors = newColors
+        }
+        
+        let res = colors?.removeFirst()
+        if let res = res {
+            colors?.append(res)
+        }
+        return res
+    }
+}
+
+// MARK: - Device dependent sizes
+
+enum NotchSize {
+    case none
+    case small
+    case big
+}
+
+class DeviceDependentOptions {
+    static private let nonNotchedStatusBarHalfHeight: CGFloat = nonNotchedStatusBarHeight / 2
+    
+    static var notchSize: NotchSize {
+        switch Device.size() {
+        case .screen5_8Inch, .screen6_5Inch:
+            return .small
+        case .screen6_1Inch:
+            return .big
+        default:
+            return .none
+        }
+    }
+    
+    static var topNotchCornerRadius: CGFloat {
+        switch notchSize {
+        case .none:
+            return nonNotchedStatusBarHalfHeight
+        case .small:
+            return 6.0
+        case .big:
+            return 7.0
+        }
+    }
+    
+    static var bottomNotchCornerRadius: CGFloat {
+        switch notchSize {
+        case .none:
+            return nonNotchedStatusBarHalfHeight
+        case .small:
+            return 20.0
+        case .big:
+            return 21.0
+        }
+    }
+    
+    static var minWidth: CGFloat {
+        return topNotchCornerRadius + bottomNotchCornerRadius
+    }
+    
+    static var notchHeight: CGFloat {
+        switch notchSize {
+        case .none:
+            return nonNotchedStatusBarHeight
+        case .small:
+            return 30
+        case .big:
+            return 33
+        }
+    }
+    
+    static var notchWidth: CGFloat {
+        switch notchSize {
+        case .none:
+            return 0
+        case .small:
+            return 117
+        case .big:
+            return 128
+        }
+    }
+}
+
