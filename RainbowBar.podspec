@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.summary          = 'Progress bar for notched status bar.'
 
   s.description      = <<-DESC
-  Progress bar with wild animation for notched status bar. Made just for fun)
+  Progress bar with wild animation for notched status bar. Powered by SwiftUI and Combine. Made just for fun and SwiftUI practice) Inspired by https://dribbble.com/shots/3824870-Loading-Animation-for-iPhone-X
                        DESC
 
   s.homepage         = 'https://github.com/DistilleryTech/RainbowBar'
