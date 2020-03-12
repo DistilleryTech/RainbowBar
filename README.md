@@ -31,4 +31,6 @@ RainbowBar(waveEmitPeriod: 0.3,
            waveColors: [.red, .green, .blue],
            backgroundColor: .white,
            animated: animatedSignal)
+           
+animatedSignal.send(true)
 ```
