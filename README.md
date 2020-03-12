@@ -1,6 +1,6 @@
 # RainbowBar
 
-Progress bar with wild animation for notched status bar. Powered by SwiftUI and Combine. Made just for fun and SwiftUI practice) Inspired by https://dribbble.com/shots/3824870-Loading-Animation-for-iPhone-X 
+Progress bar with wild animation for notched status bar. Automatic sizing (height and notch curves) according to device model. Powered by SwiftUI and Combine. Made just for fun and SwiftUI practice) Inspired by https://dribbble.com/shots/3824870-Loading-Animation-for-iPhone-X 
 
 ![gif demo](https://github.com/DistilleryTech/RainbowBar/blob/master/demo.gif)
 
