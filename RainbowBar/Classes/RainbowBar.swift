@@ -10,8 +10,6 @@ import SwiftUI
 import Combine
 import DeviceKit
 
-public let nonNotchedStatusBarHeight: CGFloat = 20.0
-
 public struct RainbowBar: View {
     var waveEmitPeriod: Double
     var visibleWavesCount: Int
@@ -39,7 +37,7 @@ public struct RainbowBar: View {
                       animatedSignal: animated)
                 .blur(radius: 1)
                 .clipShape(Rectangle())
-        }
+        }.frame(height: DeviceDependentOptions.notchHeight.rawValue)
     }
     
     public init(waveEmitPeriod: Double,
@@ -275,16 +273,16 @@ class ColorEmitter {
 
 // MARK: - Device dependent sizes
 
-public enum NotchSize {
-    case none
-    case small
-    case big
+public enum NotchHeight: CGFloat {
+    case none = 20.0
+    case small = 30.0
+    case big = 33.0
 }
 
 public class DeviceDependentOptions {
-    static private let nonNotchedStatusBarHalfHeight: CGFloat = nonNotchedStatusBarHeight / 2
+    static private let nonNotchedStatusBarHalfHeight: CGFloat = NotchHeight.none.rawValue / 2
     
-    public static var notchSize: NotchSize {
+    static var notchHeight: NotchHeight {
         switch Device.current {
         case .iPhoneX,
              .simulator(.iPhoneX),
@@ -308,7 +306,7 @@ public class DeviceDependentOptions {
     }
     
     static var topNotchCornerRadius: CGFloat {
-        switch notchSize {
+        switch notchHeight {
         case .none:
             return nonNotchedStatusBarHalfHeight
         case .small:
@@ -319,7 +317,7 @@ public class DeviceDependentOptions {
     }
     
     static var bottomNotchCornerRadius: CGFloat {
-        switch notchSize {
+        switch notchHeight {
         case .none:
             return nonNotchedStatusBarHalfHeight
         case .small:
@@ -332,20 +330,9 @@ public class DeviceDependentOptions {
     static var minWidth: CGFloat {
         return topNotchCornerRadius + bottomNotchCornerRadius
     }
-    
-    static var notchHeight: CGFloat {
-        switch notchSize {
-        case .none:
-            return nonNotchedStatusBarHeight
-        case .small:
-            return 30
-        case .big:
-            return 33
-        }
-    }
-    
+        
     static var notchWidth: CGFloat {
-        switch notchSize {
+        switch notchHeight {
         case .none:
             return 0
         case .small:

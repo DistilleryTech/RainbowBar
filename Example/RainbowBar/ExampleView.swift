@@ -10,17 +10,6 @@ import SwiftUI
 import Combine
 import RainbowBar
 
-func notchHeight() -> CGFloat {
-    switch DeviceDependentOptions.notchSize {
-    case .small:
-        return 30
-    case .big:
-        return 33
-    case .none:
-        return nonNotchedStatusBarHeight
-    }
-}
-
 struct ExampleView: View {
     private var animatedSignal = PassthroughSubject<Bool, Never>()
     @State private var animatedInnerState: Bool = false
@@ -31,7 +20,7 @@ struct ExampleView: View {
                        visibleWavesCount: 3,
                        waveColors: [.red, .green, .blue],
                        backgroundColor: .white,
-                       animated: animatedSignal).frame(height: notchHeight())
+                       animated: animatedSignal).frame(height: 100)
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()
