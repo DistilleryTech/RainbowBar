@@ -16,6 +16,8 @@ public struct RainbowBar: View {
     var waveColors: [Color]
     var backgroundColor: Color
     
+    var height: CGFloat
+    
     var animated: PassthroughSubject<Bool, Never>
     
     public var body: some View {
@@ -37,19 +39,21 @@ public struct RainbowBar: View {
                       animatedSignal: animated)
                 .blur(radius: 1)
                 .clipShape(Rectangle())
-        }.frame(height: DeviceDependentOptions.notchHeight.rawValue)
+        }.frame(height: height)
     }
     
     public init(waveEmitPeriod: Double,
                 visibleWavesCount: Int,
                 waveColors: [Color],
                 backgroundColor: Color,
-                animated: PassthroughSubject<Bool, Never>) {
+                animated: PassthroughSubject<Bool, Never>,
+                height: CGFloat = DeviceDependentOptions.notchHeight.rawValue) {
         self.waveEmitPeriod = waveEmitPeriod
         self.visibleWavesCount = visibleWavesCount
         self.waveColors = waveColors
         self.backgroundColor = backgroundColor
         self.animated = animated
+        self.height = height
     }
 }
 
@@ -282,7 +286,7 @@ public enum NotchHeight: CGFloat {
 public class DeviceDependentOptions {
     static private let nonNotchedStatusBarHalfHeight: CGFloat = NotchHeight.none.rawValue / 2
     
-    static var notchHeight: NotchHeight {
+    public static var notchHeight: NotchHeight {
         switch Device.current {
         case .iPhoneX,
              .simulator(.iPhoneX),

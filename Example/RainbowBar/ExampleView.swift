@@ -20,7 +20,7 @@ struct ExampleView: View {
                        visibleWavesCount: 3,
                        waveColors: [.red, .green, .blue],
                        backgroundColor: .white,
-                       animated: animatedSignal).frame(height: 100)
+                       animated: animatedSignal)
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()
