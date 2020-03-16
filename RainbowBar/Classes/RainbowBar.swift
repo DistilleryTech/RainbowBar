@@ -17,7 +17,10 @@ public struct RainbowBar: View {
     var backgroundColor: Color
     
     var height: CGFloat
-    
+    var centerSpacing: CGFloat
+    var waveTopCornerRadius: CGFloat
+    var waveBottomCornerRadius: CGFloat
+
     var animated: PassthroughSubject<Bool, Never>
     
     public var body: some View {
@@ -26,16 +29,20 @@ public struct RainbowBar: View {
                       visibleWavesCount: visibleWavesCount,
                       waveColors: waveColors,
                       backgroundColor: backgroundColor,
+                      topCornerRadius: waveTopCornerRadius,
+                      bottomCornerRadius: waveBottomCornerRadius,
                       animatedSignal: animated)
                 .blur(radius: 1)
                 .clipShape(Rectangle())
                 .rotationEffect(.degrees(180), anchor: .center)
                 .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
-            Spacer().frame(width: DeviceDependentOptions.notchWidth)
+            Spacer().frame(width: centerSpacing)
             WavesView(waveEmitPeriod: waveEmitPeriod,
                       visibleWavesCount: visibleWavesCount,
                       waveColors: waveColors,
                       backgroundColor: backgroundColor,
+                      topCornerRadius: waveTopCornerRadius,
+                      bottomCornerRadius: waveBottomCornerRadius,
                       animatedSignal: animated)
                 .blur(radius: 1)
                 .clipShape(Rectangle())
@@ -47,13 +54,63 @@ public struct RainbowBar: View {
                 waveColors: [Color],
                 backgroundColor: Color,
                 animated: PassthroughSubject<Bool, Never>,
-                height: CGFloat = DeviceDependentOptions.notchHeight.rawValue) {
+                height: Size = defaultSize(),
+                centerSpacing: Size = defaultSize(),
+                waveTopCornerRadius: Size = defaultSize(),
+                waveBottomCornerRadius: Size = defaultSize()) {
         self.waveEmitPeriod = waveEmitPeriod
         self.visibleWavesCount = visibleWavesCount
         self.waveColors = waveColors
         self.backgroundColor = backgroundColor
         self.animated = animated
-        self.height = height
+        
+        let nonNotchedStatusBarHeight: CGFloat = 20.0
+
+        switch height {
+        case .none:
+            self.height = nonNotchedStatusBarHeight
+        case .small:
+            self.height = 30
+        case .big:
+            self.height = 33
+        case .custom(let val):
+            self.height = val
+        }
+        
+        switch centerSpacing {
+        case .none:
+            self.centerSpacing = 0
+        case .small:
+            self.centerSpacing = 117
+        case .big:
+            self.centerSpacing = 128
+        case .custom(let val):
+            self.centerSpacing = val
+        }
+
+        let nonNotchedStatusBarHalfHeight: CGFloat = nonNotchedStatusBarHeight / 2
+        
+        switch waveTopCornerRadius {
+        case .none:
+            self.waveTopCornerRadius = nonNotchedStatusBarHalfHeight
+        case .small:
+            self.waveTopCornerRadius = 6
+        case .big:
+            self.waveTopCornerRadius = 7
+        case .custom(let val):
+            self.waveTopCornerRadius = val
+        }
+        
+        switch waveBottomCornerRadius {
+        case .none:
+            self.waveBottomCornerRadius = nonNotchedStatusBarHalfHeight
+        case .small:
+            self.waveBottomCornerRadius = 20
+        case .big:
+            self.waveBottomCornerRadius = 21
+        case .custom(let val):
+            self.waveBottomCornerRadius = val
+        }
     }
 }
 
@@ -62,6 +119,7 @@ struct WavesView: View {
     let visibleWavesCount: Int
     let waveColors: [Color]
     let backgroundColor: Color
+    var topCornerRadius, bottomCornerRadius: CGFloat
     
     private let colorEmitter = ColorEmitter()
     private let waveFinished = PassthroughSubject<Void, Never>()
@@ -72,7 +130,8 @@ struct WavesView: View {
                 var res = [NotchWaveNode]()
                 for index in 0..<visibleWavesCount {
                     guard let color = self.colorEmitter.nextColor(from: self.waveColors) else { continue }
-                    let newNode = NotchWaveNode(color: color, delay: waveEmitPeriod * Double(index))
+                    let newNode = NotchWaveNode(color: color,
+                                                delay: waveEmitPeriod * Double(index))
                     res.append(newNode)
                 }
                 self.waveNodes =  res
@@ -81,7 +140,9 @@ struct WavesView: View {
                     !$0.started
                 }
                 if let lastVisibleNode = waveNodes.last as? NotchWaveNode {
-                    let gradientNode = GradientWaveNode(frontColor: lastVisibleNode.color, backColor: backgroundColor, delay: 0)
+                    let gradientNode = GradientWaveNode(frontColor: lastVisibleNode.color,
+                                                        backColor: backgroundColor,
+                                                        delay: 0)
                     waveNodes.append(gradientNode)
                 }
             }
@@ -94,7 +155,9 @@ struct WavesView: View {
             ForEach(waveNodes) { node in
                 WaveView(animationDuration: self.waveEmitPeriod * Double(self.visibleWavesCount),
                          animationFinished: self.waveFinished,
-                         node: node)
+                         node: node,
+                         topCornerRadius: self.topCornerRadius,
+                         bottomCornerRadius: self.bottomCornerRadius)
             }
         }.onReceive(waveFinished) {node in
             // remove invisible (lower, first) node?
@@ -123,15 +186,24 @@ struct WaveView: View {
     var animationDuration: Double
     var animationFinished: PassthroughSubject<Void, Never>
     var node: WaveNode
+    var topCornerRadius, bottomCornerRadius: CGFloat
 
     @State private var animated: Bool = false
     
     func makeWave(from node: WaveNode) -> some View {
         let phase: CGFloat = self.animated ? 1.0 : 0.0
         if let notchNode = node as? NotchWaveNode {
-            return AnyView(NotchWave(phase: phase, animationFinished: self.animationFinished, node: notchNode).foregroundColor(notchNode.color))
+            return AnyView(NotchWave(phase: phase,
+                                     animationFinished: self.animationFinished,
+                                     node: notchNode,
+                                     topCornerRadius: topCornerRadius,
+                                     bottomCornerRadius: bottomCornerRadius).foregroundColor(notchNode.color))
         } else if let gradientNode = node as? GradientWaveNode {
-            return AnyView(GradientWave(phase: phase, frontColor: gradientNode.frontColor, backColor: gradientNode.backColor, animationFinished: self.animationFinished))
+            return AnyView(GradientWave(phase: phase,
+                                        frontColor: gradientNode.frontColor,
+                                        backColor: gradientNode.backColor,
+                                        animationFinished: self.animationFinished,
+                                        minWidth: topCornerRadius + bottomCornerRadius))
         } else {
             return AnyView(EmptyView())
         }
@@ -150,6 +222,7 @@ struct NotchWave: Shape {
     var phase: CGFloat
     var animationFinished: PassthroughSubject<Void, Never>
     var node: NotchWaveNode
+    var topCornerRadius, bottomCornerRadius: CGFloat
 
     var animatableData: CGFloat {
         get { return phase }
@@ -170,18 +243,18 @@ struct NotchWave: Shape {
         var p = Path()
         
         p.move(to: CGPoint.zero)
-                
-        let currentWidth = 2 * DeviceDependentOptions.minWidth + rect.size.width * phase
+        
+        let currentWidth = 2 * (topCornerRadius + bottomCornerRadius) + rect.size.width * phase
         p.addLine(to: CGPoint(x: currentWidth, y: 0))
         
-        let topArcCenter = CGPoint(x: currentWidth, y: DeviceDependentOptions.topNotchCornerRadius)
-        p.addArc(center: topArcCenter, radius: DeviceDependentOptions.topNotchCornerRadius, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
+        let topArcCenter = CGPoint(x: currentWidth, y: topCornerRadius)
+        p.addArc(center: topArcCenter, radius: topCornerRadius, startAngle: .degrees(270), endAngle: .degrees(180), clockwise: true)
 
         let height = rect.size.height
-        p.addLine(to: CGPoint(x: currentWidth - DeviceDependentOptions.topNotchCornerRadius, y: height - DeviceDependentOptions.bottomNotchCornerRadius))
+        p.addLine(to: CGPoint(x: currentWidth - topCornerRadius, y: height - bottomCornerRadius))
 
-        let bottomArcCenter = CGPoint(x: currentWidth - DeviceDependentOptions.topNotchCornerRadius - DeviceDependentOptions.bottomNotchCornerRadius, y: height - DeviceDependentOptions.bottomNotchCornerRadius)
-        p.addArc(center: bottomArcCenter, radius: DeviceDependentOptions.bottomNotchCornerRadius, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+        let bottomArcCenter = CGPoint(x: currentWidth - topCornerRadius - bottomCornerRadius, y: height - bottomCornerRadius)
+        p.addArc(center: bottomArcCenter, radius: bottomCornerRadius, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
         
         p.addLine(to: CGPoint(x: 0, y: height))
 
@@ -195,6 +268,7 @@ struct GradientWave: View {
     var phase: CGFloat
     var frontColor, backColor: Color
     var animationFinished: PassthroughSubject<Void, Never>
+    var minWidth: CGFloat
 
     var animatableData: CGFloat {
         get { return phase }
@@ -210,8 +284,10 @@ struct GradientWave: View {
         
         return GeometryReader { geometry in
             HStack(spacing: 0) {
-                Rectangle().foregroundColor(self.backColor).frame(width: (geometry.size.width + DeviceDependentOptions.minWidth) * self.phase)
-                LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]), startPoint: .leading, endPoint: .trailing).frame(width: DeviceDependentOptions.minWidth)
+                Rectangle().foregroundColor(self.backColor).frame(width: (geometry.size.width + self.minWidth) * self.phase)
+                LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]),
+                               startPoint: .leading,
+                               endPoint: .trailing).frame(width: self.minWidth)
                 Spacer()
             }
         }
@@ -275,75 +351,32 @@ class ColorEmitter {
     }
 }
 
-// MARK: - Device dependent sizes
-
-public enum NotchHeight: CGFloat {
-    case none = 20.0
-    case small = 30.0
-    case big = 33.0
+public enum Size {
+    case none
+    case small
+    case big
+    case custom(CGFloat)
 }
 
-public class DeviceDependentOptions {
-    static private let nonNotchedStatusBarHalfHeight: CGFloat = NotchHeight.none.rawValue / 2
-    
-    public static var notchHeight: NotchHeight {
-        switch Device.current {
-        case .iPhoneX,
-             .simulator(.iPhoneX),
-             .iPhoneXS,
-             .simulator(.iPhoneXS),
-             .iPhoneXSMax,
-             .simulator(.iPhoneXSMax),
-             .iPhone11Pro,
-             .simulator(.iPhone11Pro),
-             .iPhone11ProMax,
-             .simulator(.iPhone11ProMax):
-            return .small
-        case .iPhoneXR,
-             .simulator(.iPhoneXR),
-             .iPhone11,
-             .simulator(.iPhone11):
-            return .big
-        default:
-            return .none
-        }
-    }
-    
-    static var topNotchCornerRadius: CGFloat {
-        switch notchHeight {
-        case .none:
-            return nonNotchedStatusBarHalfHeight
-        case .small:
-            return 6.0
-        case .big:
-            return 7.0
-        }
-    }
-    
-    static var bottomNotchCornerRadius: CGFloat {
-        switch notchHeight {
-        case .none:
-            return nonNotchedStatusBarHalfHeight
-        case .small:
-            return 20.0
-        case .big:
-            return 21.0
-        }
-    }
-    
-    static var minWidth: CGFloat {
-        return topNotchCornerRadius + bottomNotchCornerRadius
-    }
-        
-    static var notchWidth: CGFloat {
-        switch notchHeight {
-        case .none:
-            return 0
-        case .small:
-            return 117
-        case .big:
-            return 128
-        }
+public func defaultSize() -> Size {
+    switch Device.current {
+    case .iPhoneX,
+         .simulator(.iPhoneX),
+         .iPhoneXS,
+         .simulator(.iPhoneXS),
+         .iPhoneXSMax,
+         .simulator(.iPhoneXSMax),
+         .iPhone11Pro,
+         .simulator(.iPhone11Pro),
+         .iPhone11ProMax,
+         .simulator(.iPhone11ProMax):
+        return .small
+    case .iPhoneXR,
+         .simulator(.iPhoneXR),
+         .iPhone11,
+         .simulator(.iPhone11):
+        return .big
+    default:
+        return .none
     }
 }
-
