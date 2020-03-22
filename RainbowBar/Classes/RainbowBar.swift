@@ -25,17 +25,17 @@ public struct RainbowBar: View {
     
     public var body: some View {
         return HStack {
-            WavesView(waveEmitPeriod: waveEmitPeriod,
-                      visibleWavesCount: visibleWavesCount,
-                      waveColors: waveColors,
-                      backgroundColor: backgroundColor,
-                      topCornerRadius: waveTopCornerRadius,
-                      bottomCornerRadius: waveBottomCornerRadius,
-                      animatedSignal: animated)
-                .blur(radius: 1)
-                .clipShape(Rectangle())
-                .rotationEffect(.degrees(180), anchor: .center)
-                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+//            WavesView(waveEmitPeriod: waveEmitPeriod,
+//                      visibleWavesCount: visibleWavesCount,
+//                      waveColors: waveColors,
+//                      backgroundColor: backgroundColor,
+//                      topCornerRadius: waveTopCornerRadius,
+//                      bottomCornerRadius: waveBottomCornerRadius,
+//                      animatedSignal: animated)
+//                .blur(radius: 1)
+//                .clipShape(Rectangle())
+//                .rotationEffect(.degrees(180), anchor: .center)
+//                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
             Spacer().frame(width: centerSpacing)
             WavesView(waveEmitPeriod: waveEmitPeriod,
                       visibleWavesCount: visibleWavesCount,
@@ -134,7 +134,7 @@ struct WavesView: View {
                                                 delay: waveEmitPeriod * Double(index))
                     res.append(newNode)
                 }
-                self.waveNodes =  res
+                waveNodes = res
             } else {
                 waveNodes.removeAll {
                     !$0.started
@@ -159,7 +159,7 @@ struct WavesView: View {
                          topCornerRadius: self.topCornerRadius,
                          bottomCornerRadius: self.bottomCornerRadius)
             }
-        }.onReceive(waveFinished) {node in
+        }.onReceive(waveFinished) {
             // remove invisible (lower, first) node?
             if self.waveNodes.count > 0 {
                 var removeFirstNode = false
@@ -230,10 +230,11 @@ struct NotchWave: Shape {
     }
     
     func path(in rect: CGRect) -> Path {
+        if !self.node.started && self.phase > 0.0 {
+            self.node.started = true
+        }
+        
         DispatchQueue.main.async {
-            if !self.node.started && self.phase > 0.0 {
-                self.node.started = true
-            }
             if self.phase >= 1.0 {
                 self.node.finished = true
                 self.animationFinished.send()
