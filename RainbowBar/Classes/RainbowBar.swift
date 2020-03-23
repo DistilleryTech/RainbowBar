@@ -25,17 +25,17 @@ public struct RainbowBar: View {
     
     public var body: some View {
         return HStack {
-//            WavesView(waveEmitPeriod: waveEmitPeriod,
-//                      visibleWavesCount: visibleWavesCount,
-//                      waveColors: waveColors,
-//                      backgroundColor: backgroundColor,
-//                      topCornerRadius: waveTopCornerRadius,
-//                      bottomCornerRadius: waveBottomCornerRadius,
-//                      animatedSignal: animated)
-//                .blur(radius: 1)
-//                .clipShape(Rectangle())
-//                .rotationEffect(.degrees(180), anchor: .center)
-//                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+            WavesView(waveEmitPeriod: waveEmitPeriod,
+                      visibleWavesCount: visibleWavesCount,
+                      waveColors: waveColors,
+                      backgroundColor: backgroundColor,
+                      topCornerRadius: waveTopCornerRadius,
+                      bottomCornerRadius: waveBottomCornerRadius,
+                      animatedSignal: animated)
+                .blur(radius: 1)
+                .clipShape(Rectangle())
+                .rotationEffect(.degrees(180), anchor: .center)
+                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
             Spacer().frame(width: centerSpacing)
             WavesView(waveEmitPeriod: waveEmitPeriod,
                       visibleWavesCount: visibleWavesCount,
@@ -245,7 +245,7 @@ struct NotchWave: Shape {
         DispatchQueue.main.async {
             if self.phase >= 1.0 {
                 self.node.finished = true
-                self.animationFinished.send()
+                self.animationFinished.send(self.node)
             }
         }
         
