@@ -27,7 +27,7 @@ public struct RainbowBar: View {
     var animated: PassthroughSubject<Bool, Never>
 
     public var body: some View {
-        return HStack {
+        HStack {
             WavesView(waveEmitPeriod: waveEmitPeriod,
                       visibleWavesCount: visibleWavesCount,
                       waveColors: waveColors,
@@ -36,8 +36,6 @@ public struct RainbowBar: View {
                       bottomCornerRadius: waveBottomCornerRadius,
                       animatedSignal: animated,
                       completion: completion)
-                .blur(radius: 1)
-                .clipShape(Rectangle())
                 .rotationEffect(.degrees(180), anchor: .center)
                 .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
             Spacer().frame(width: centerSpacing)
@@ -49,8 +47,6 @@ public struct RainbowBar: View {
                       bottomCornerRadius: waveBottomCornerRadius,
                       animatedSignal: animated,
                       completion: nil)
-                .blur(radius: 1)
-                .clipShape(Rectangle())
         }.frame(height: height)
     }
     
