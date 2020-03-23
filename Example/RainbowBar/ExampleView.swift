@@ -13,6 +13,7 @@ import RainbowBar
 struct ExampleView: View {
     private var animatedSignal = PassthroughSubject<Bool, Never>()
     @State private var animatedInnerState: Bool = false
+    @State private var running: Bool = false
 
     var body: some View {
         return VStack {
@@ -20,14 +21,21 @@ struct ExampleView: View {
                        visibleWavesCount: 3,
                        waveColors: [.red, .green, .blue],
                        backgroundColor: .white,
-                       animated: animatedSignal)
+                       animated: animatedSignal) {
+                        self.running = false
+            }
             Spacer()
             Button(action: {
                 self.animatedInnerState.toggle()
                 self.animatedSignal.send(self.animatedInnerState)
+                if self.animatedInnerState {
+                    self.running = true
+                }
             }) {
                 Text("Toggle")
             }
+            Spacer()
+            Text(running ? "running" : "ready")
             Spacer()
         }.edgesIgnoringSafeArea(.all)
     }
