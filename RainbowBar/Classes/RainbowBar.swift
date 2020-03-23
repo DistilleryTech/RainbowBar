@@ -10,11 +10,14 @@ import SwiftUI
 import Combine
 import DeviceKit
 
+public typealias CompletionHandler = () -> Void
+
 public struct RainbowBar: View {
     var waveEmitPeriod: Double
     var visibleWavesCount: Int
     var waveColors: [Color]
     var backgroundColor: Color
+    var completion: CompletionHandler?
     
     var height: CGFloat
     var centerSpacing: CGFloat
@@ -22,7 +25,7 @@ public struct RainbowBar: View {
     var waveBottomCornerRadius: CGFloat
 
     var animated: PassthroughSubject<Bool, Never>
-    
+
     public var body: some View {
         return HStack {
             WavesView(waveEmitPeriod: waveEmitPeriod,
@@ -31,7 +34,8 @@ public struct RainbowBar: View {
                       backgroundColor: backgroundColor,
                       topCornerRadius: waveTopCornerRadius,
                       bottomCornerRadius: waveBottomCornerRadius,
-                      animatedSignal: animated)
+                      animatedSignal: animated,
+                      completion: completion)
                 .blur(radius: 1)
                 .clipShape(Rectangle())
                 .rotationEffect(.degrees(180), anchor: .center)
@@ -43,7 +47,8 @@ public struct RainbowBar: View {
                       backgroundColor: backgroundColor,
                       topCornerRadius: waveTopCornerRadius,
                       bottomCornerRadius: waveBottomCornerRadius,
-                      animatedSignal: animated)
+                      animatedSignal: animated,
+                      completion: nil)
                 .blur(radius: 1)
                 .clipShape(Rectangle())
         }.frame(height: height)
@@ -57,13 +62,15 @@ public struct RainbowBar: View {
                 height: Size = defaultSize(),
                 centerSpacing: Size = defaultSize(),
                 waveTopCornerRadius: Size = defaultSize(),
-                waveBottomCornerRadius: Size = defaultSize()) {
+                waveBottomCornerRadius: Size = defaultSize(),
+                completion: CompletionHandler?) {
         self.waveEmitPeriod = waveEmitPeriod
         self.visibleWavesCount = visibleWavesCount
         self.waveColors = waveColors
         self.backgroundColor = backgroundColor
         self.animated = animated
-        
+        self.completion = completion
+
         let nonNotchedStatusBarHeight: CGFloat = 20.0
 
         switch height {
@@ -120,7 +127,9 @@ struct WavesView: View {
     let waveColors: [Color]
     let backgroundColor: Color
     var topCornerRadius, bottomCornerRadius: CGFloat
-    
+    @State var animatedSignal = PassthroughSubject<Bool, Never>()
+    var completion: CompletionHandler?
+
     var animationDuration: Double {
         get {
             return waveEmitPeriod * Double(visibleWavesCount)
@@ -156,7 +165,6 @@ struct WavesView: View {
             }
         }
     }
-    @State var animatedSignal = PassthroughSubject<Bool, Never>()
     
     var body: some View {
         return ZStack {
@@ -168,6 +176,12 @@ struct WavesView: View {
                          bottomCornerRadius: self.bottomCornerRadius)
             }
         }.onReceive(waveFinished) { node in
+            if node is GradientWaveNode, let completion = self.completion {
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+            
             // remove invisible (lower, first) node?
             if self.waveNodes.count > 0 {
                 var removeFirstNode = false
