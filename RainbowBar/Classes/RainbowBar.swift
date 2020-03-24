@@ -297,9 +297,9 @@ struct GradientWave: View {
         return GeometryReader { geometry in
             HStack(spacing: 0) {
                 Rectangle().foregroundColor(self.backColor).frame(width: (geometry.size.width + self.minWidth) * self.phase)
-                LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]),
-                               startPoint: .leading,
-                               endPoint: .trailing).frame(width: self.minWidth)
+                
+                Rectangle().fill(LinearGradient(gradient: Gradient(colors: [self.backColor, self.frontColor]), startPoint: .leading, endPoint: .trailing)).frame(width: self.minWidth)
+                
                 Spacer()
             }
         }
