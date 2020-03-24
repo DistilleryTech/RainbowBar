@@ -176,6 +176,7 @@ struct WavesView: View {
                 DispatchQueue.main.async {
                     completion()
                 }
+                return
             }
             
             // remove invisible (lower, first) node?
