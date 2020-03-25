@@ -36,8 +36,7 @@ public struct RainbowBar: View {
                       bottomCornerRadius: waveBottomCornerRadius,
                       animatedSignal: animated,
                       completion: completion)
-                .rotationEffect(.degrees(180), anchor: .center)
-                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0), anchor: .center)
             Spacer().frame(width: centerSpacing)
             WavesView(waveEmitPeriod: waveEmitPeriod,
                       visibleWavesCount: visibleWavesCount,
