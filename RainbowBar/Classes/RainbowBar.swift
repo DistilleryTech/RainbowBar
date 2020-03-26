@@ -310,7 +310,7 @@ struct GradientWave: View {
 
 typealias AnimationSignal = PassthroughSubject<WaveNode, Never>
 
-class WaveNode: Identifiable, Equatable {
+class WaveNode: Identifiable {
     let id = UUID()
     let delay: Double
 
@@ -319,10 +319,6 @@ class WaveNode: Identifiable, Equatable {
     
     init(delay: Double) {
         self.delay = delay
-    }
-    
-    static func ==(lhs: WaveNode, rhs: WaveNode) -> Bool {
-        return lhs.id == rhs.id
     }
 }
 
