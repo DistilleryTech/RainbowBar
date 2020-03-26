@@ -122,7 +122,7 @@ struct WavesView: View {
     let waveColors: [Color]
     let backgroundColor: Color
     var topCornerRadius, bottomCornerRadius: CGFloat
-    @State var animatedSignal = PassthroughSubject<Bool, Never>()
+    var animatedSignal = PassthroughSubject<Bool, Never>()
     var completion: CompletionHandler?
 
     var animationDuration: Double {
@@ -162,7 +162,7 @@ struct WavesView: View {
     }
     
     var body: some View {
-        return ZStack {
+        ZStack {
             ForEach(waveNodes) { node in
                 WaveView(animationDuration: self.animationDuration,
                          animationFinished: self.waveFinished,
@@ -228,7 +228,7 @@ struct WaveView: View {
     }
     
     var body: some View {
-        return makeWave(from: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).onAppear {
+        makeWave(from: node).animation(Animation.easeIn(duration: animationDuration).delay(node.delay)).onAppear {
             self.animated.toggle()
         }
     }
