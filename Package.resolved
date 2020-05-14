@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "DeviceKit",
+        "repositoryURL": "https://github.com/devicekit/DeviceKit",
+        "state": {
+          "branch": null,
+          "revision": "4a1c9aa580ae1db763791015e119c4331c95ad02",
+          "version": "2.3.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
